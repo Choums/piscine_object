@@ -6,7 +6,7 @@
 class Vector2 {
     public:
         Vector2(const float x = 0.0f, const float y = 0.0f);
-        ~Vector2();
+        ~Vector2() = default;
 
         std::pair<const float, const float> getPoints() const;
 

@@ -6,9 +6,6 @@ Account::Account(const unsigned int initialDeposit) :  _balance(initialDeposit) 
     _id = ++_incrId;
 }
 
-Account::~Account() {
-}
-
 const unsigned int& Account::getId() const {
     return (this->_id);
 }

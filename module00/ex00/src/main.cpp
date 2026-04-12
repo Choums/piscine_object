@@ -6,7 +6,7 @@ int main()
 {
     Bank bank = Bank();
 
-    // Créer des comptes
+
     bank.createAccount(1000U);
     bank.createAccount(500U);
 

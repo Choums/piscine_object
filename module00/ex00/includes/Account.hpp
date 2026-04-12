@@ -14,7 +14,7 @@ class Account
         
     private:
         Account(const unsigned int initialDeposit = 0U);
-        ~Account();
+        ~Account() = default;
         
         void setBalance(const float amount);
     
