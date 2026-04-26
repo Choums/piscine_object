@@ -24,16 +24,22 @@ Worker::~Worker() {
 }
 
 void Worker::addTool(ATool* pTool) {
-    if ((pTool) && (!pTool->isInUse())) {
+    if (!pTool)
+        return ;
+    if (!pTool->isInUse()) {
         this->_vTools.push_back(pTool);
         pTool->updateUsage(true);
         std::cout << "Worker "<< static_cast<int>(_workerId) << " has gained a new "<< pTool->getToolName() <<" !" << std::endl;
+    } 
+    else if (pTool->isInUse()) {
+        releaseTool(pTool->getToolName());
+        
     }
 }
 
 ATool* Worker::getTool(const std::string& tool) {
     std::vector<ATool*>::iterator it = std::find_if(_vTools.begin(), _vTools.end(),
-                                                    [&tool](ATool* item) { return (item && item->getToolName() == "Shovel");});
+                                                    [&tool](ATool* item) { return (item && item->getToolName() == tool);});
     return ((it != _vTools.end()) ? *it : nullptr);
 }
 
@@ -80,12 +86,10 @@ void Worker::work() {
         return ;
     std::cout << "Worker "<< static_cast<int>(_workerId) << " is working hard !" << std::endl;
     if (randomBool() == true) {
-        std::cout << "oiasdufgbuoisadbgfoaisujbdaiousdbasiodubasoidubhasdoiugbasoiujdbasujoibdujaiosbd" << std::endl;
         Shovel* shovel = static_cast<Shovel*>(getTool("Shovel"));
-        if (shovel)(rand() % 2)
+        if (shovel)
             shovel->use();
     } else {
-        std::cout << "putain de marteau" << std::endl;
         Hammer* hammer = static_cast<Hammer*>(getTool("Hammer"));
         if (hammer)
             hammer->use();
