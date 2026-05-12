@@ -34,7 +34,7 @@ DEP= $(SDEP)
 
 # compiler
 CC		= c++ $(CFLAGS)
-CFLAGS	=  -g3  -MMD -MP #-std=c++98 -Wall -Wextra -Werror
+CFLAGS	=  -g3  -MMD -MP -std=c++98 -Wall -Wextra -Werror
 
 all:	obj $(NAME)
 

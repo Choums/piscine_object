@@ -1,23 +1,23 @@
 #pragma once
 #include <iostream>
-#include <cstdint>
 #include <vector>
-#include <algorithm>
-#include <type_traits>
 #include <ctime>
+#include <string>
+#include <cstdlib>
+#include <sstream>
 
 extern unsigned int _id;
 
 class Worker;
-class ATool;
+class Tool;
 class Shovel;
 class Hammer;
 
 
-class ATool {
+class Tool {
     public:
-    ATool(const std::string& name) : _toolName(name), _numberOfUses(5U), _inUse(false) {};
-    virtual ~ATool() = default;
+    Tool(const std::string& name) : _toolName(name), _numberOfUses(5U), _inUse(false) {};
+    virtual ~Tool() {};
     virtual void use() = 0;
     
     bool isInUse() {
@@ -34,41 +34,40 @@ class ATool {
         unsigned int _numberOfUses;
         bool _inUse;
 
-    private:
-        ATool() : ATool(std::string()) {};
-
     public:
-        friend std::ostream& operator <<(std::ostream& p_os, const ATool& pTool)
+        friend std::ostream& operator <<(std::ostream& p_os, const Tool& pTool)
         {
-            p_os <<  pTool._toolName << "[" + std::to_string(pTool._numberOfUses) + "]"; 
+            std::ostringstream oss;
+            oss << pTool._numberOfUses;
+            p_os <<  pTool._toolName << "[" +  oss.str() + "]"; 
 
             return (p_os);
         }
 };
 
-struct Shovel : public ATool
+struct Shovel : public Tool
 {
-    Shovel() : ATool("Shovel") {};
+    Shovel() : Tool("Shovel") {};
     void use();
 };
 
-class Hammer : public ATool {
+class Hammer : public Tool {
     public:
-        Hammer() : ATool("Hammer") {};
+        Hammer() : Tool("Hammer") {};
         void use();
 };
 
 struct Position
 {
-    int x = 0;
-    int y = 0;
-    int z = 0;
+    int x;
+    int y;
+    int z;
 };
 
 struct Statistic
 {
-    int level = 1;
-    int exp = 0;
+    int level;
+    int exp;
 };
 
 class WorkShop;
@@ -80,21 +79,26 @@ class Worker
         
         ~Worker();
 
-        void addTool(ATool* pTool);
+        void addTool(Tool* pTool);
         void releaseTool(const std::string& tool);
         void giveTool(Worker& target, const std::string& tool);
 
         void apply(WorkShop* Workshop);
+        void leave(WorkShop* Workshop);
         void work();
-        inline const unsigned int getWorkerId() const {
+        inline unsigned int getWorkerId() const {
             return (_workerId);
         }
 
         inline void updateEmploymentStatus(const bool status) {
+            if ((status == false) && (_vWorkShops.empty())) {
+                _employed = false;
+                return ;
+            }
             _employed = status;
         }
     private:
-        ATool* getTool(const std::string& tool);
+        Tool* getTool(const std::string& tool);
         unsigned int _workerId;
         bool _employed;
         /** Composed attributes **/
@@ -102,7 +106,7 @@ class Worker
         Statistic   _stat;
 
         /** Aggregated attributes **/
-        std::vector<ATool*> _vTools;
+        std::vector<Tool*> _vTools;
         /** Association attributes **/
         std::vector<WorkShop*> _vWorkShops;
 
@@ -114,7 +118,7 @@ class Worker
             p_os << "Level ["<< pWorker._stat.level << "] | exp: " << pWorker._stat.exp << std::endl;
             p_os << "Items :"<< std::endl;
             for (size_t i(0U); i < pWorker._vTools.size(); i++) {
-                p_os << (pWorker._vTools[i] != nullptr ? '\t' : ' ') << *(pWorker._vTools[i]) << std::endl;
+                p_os << (pWorker._vTools[i] != NULL ? '\t' : ' ') << *(pWorker._vTools[i]) << std::endl;
             }
             p_os << "-------------------------" << std::endl;
             return (p_os);
@@ -128,10 +132,11 @@ class WorkShop {
         virtual ~WorkShop();
 
         void executeWorkDay();
-        void recruit(Worker* employee);
+        bool recruit(Worker* employee);
         void fire(Worker* employee);
+        void resignment(Worker* employee);
 
-        private:
+    private:
         std::vector<Worker*> _vWorkers;
     public:
         friend std::ostream& operator <<(std::ostream& p_os, const WorkShop& pWorkShop)
@@ -139,7 +144,7 @@ class WorkShop {
             p_os << std::endl << "------------WorkShop-------------" << std::endl;
             p_os << "Total Employees " << pWorkShop._vWorkers.size() << " :"<< std::endl;
             for (size_t i(0U); i < pWorkShop._vWorkers.size(); i++) {
-                p_os << (pWorkShop._vWorkers[i] != nullptr ? '\t' : ' ') << "Worker " << pWorkShop._vWorkers[i]->getWorkerId() << std::endl;
+                p_os << (pWorkShop._vWorkers[i] != NULL ? '\t' : ' ') << "Worker " << pWorkShop._vWorkers[i]->getWorkerId() << std::endl;
             }
             p_os << "---------------------------------" << std::endl;
             return (p_os);
