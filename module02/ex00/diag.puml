@@ -1,0 +1,165 @@
+@startuml Car Composition
+title Car Composition
+
+skinparam BackgroundColor Ivory
+
+skinparam class {
+    BackgroundColor #AntiqueWhite
+}
+
+abstract class LinkablePart #LavenderBlush {
+    + {abstract} execute(float p_pression) : void
+}
+note right of LinkablePart #DarkCyan
+    LinkablePart is an Interface
+    This version cannot handle 
+    Interface display
+end note
+
+class Wheel {
+    + executeRotation(float p_force) : void
+}
+
+class Gear {
+    - demultiplier : int
+}
+
+class GearLever {
+    - array_gear : std::array<Gear>
+    - level : int 
+    + change() : void
+    + activeGear() : Gear*
+}
+
+class Singleton
+
+class Transmission {
+    - std::vector<Wheel *>
+    + activate(float p_force) : void
+}
+
+class Crankshaft {
+    - p_transmission : Transmission*
+    + receiveForce(float p_volume) : void
+}
+
+class ExplosionChamber {
+    - p_crankshaft : Crankshaft*
+    + fill(float p_volume) : void
+}
+
+class Injector {
+    - p_explosionChamber : ExplosionChamber*
+    + execute(float p_pression) : void
+}
+
+class Motor {
+    - c_injector : Injector
+    - c_explosionChamber : ExplosionChamber 
+    - c_crankshaft : Crankshaft
+
+    + connectToTransmission(Transmission* p_transmission) : void
+}
+
+class Pedal {
+    - p_linkablePart: LinkablePart*
+    + setTarget(LinkablePart* p_part) : void
+    + use(float p_pression) : void
+}
+
+class Direction {
+    - array_wheel : std::array<Wheel>
+    + turn(float p_angle) : void
+}
+
+class DAE {
+    - p_direction : Direction*
+    - force : float
+    + use(float p_angle) : void
+}
+
+class SteerWheel {
+    - p_dae : DAE*
+    + turn(float p_angle) : void
+}
+
+class Brake {
+    - p_wheel : Wheel*
+    + execute(float p_force) : void
+    + attackWheel(Wheel* p_wheel) : void
+}
+
+class BrakeController {
+    - array_brake : std::array<Brake>
+    + execute(float p_pression) : void
+}
+
+class Cockpit {
+    - c_pedal : Pedal
+    - c_steerWheel : SteerWheel
+    - c_gearLever : GearLever
+    + manage_Pedal() : void
+    + manage_SteerWheel() : void
+    + manage_GearLever() : void
+}
+
+class Electronics {
+    - c_dae : DAE
+}
+
+class Car {
+    - c_brakeController : BrakeController
+    - c_direction : Direction
+    - c_transmission : Transmission
+    - c_motor : Motor
+    - c_electronics : Electronics
+    - c_cockpit : Cockpit
+
+
+}
+
+' --------------
+
+GearLever --|> Singleton
+GearLever *-- Gear
+
+Transmission o-- Wheel
+
+Crankshaft o-- Transmission
+
+ExplosionChamber o-- Crankshaft
+
+Injector ..|> LinkablePart
+Injector o-- ExplosionChamber
+
+Motor *-- Injector
+Motor *-- ExplosionChamber
+Motor *-- Crankshaft
+
+Pedal o-- LinkablePart
+
+Direction *-- Wheel
+
+DAE o-- Direction
+
+SteerWheel o-- DAE
+
+Brake o-- Wheel
+
+BrakeController ..|> LinkablePart
+BrakeController *-- Brake
+
+Cockpit *-- Pedal
+Cockpit *-- SteerWheel
+Cockpit *-- GearLever
+
+Electronics *-- DAE
+
+Car *-- BrakeController
+Car *-- Direction
+Car *-- Transmission
+Car *-- Motor
+Car *-- Electronics
+Car *-- Cockpit
+
+@enduml
